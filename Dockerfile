@@ -1,4 +1,4 @@
-FROM node:12-alpine as local-dev
+FROM node:14 as local-dev
 EXPOSE 3001
 RUN mkdir -p /app
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN npm run build
 CMD ["npm", "run", "start:watch"]
 
 
-FROM node:12-alpine as dev-builder
+FROM node:14 as dev-builder
 RUN mkdir -p /app
 WORKDIR /app
 COPY *.json ./
@@ -19,7 +19,7 @@ RUN npm run build
 CMD ["npm", "run", "start"]
 
 # Start multi-stage build
-FROM node:12-alpine as production
+FROM node:14 as production
 EXPOSE 8080
 RUN mkdir -p /app
 WORKDIR /app
