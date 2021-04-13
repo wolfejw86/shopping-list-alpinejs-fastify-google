@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "npm run build:ts && tsc -p test/tsconfig.test.json && tap test/**/*.test.ts",
-    "build": "npm run clean && npm run build:ts && npm run build:css && tscp",
+    "build": "npm run clean && npm run build:ts && npm run build:css && tscp && cp ./src/public/sw.js ./dist/public/sw.js",
     "clean": "rm -rf dist",
     "build:css": "postcss src/public/tailwind.css -o src/public/styles.css",
     "start": "node dist/server.js",
