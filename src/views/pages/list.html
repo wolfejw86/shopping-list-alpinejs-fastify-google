@@ -48,9 +48,7 @@
         sse.addEventListener('list_item_deleted', ({ data }) => {
           const removedItem = JSON.parse(data);
 
-          const index = this.listItems.findIndex(item => item.id = removedItem.id);
-
-          this.listItems.splice(index, 1);
+          this.listItems = this.listItems.filter(item => item.id !== removedItem.id);
         })
       },
       deleteItem(item) {
