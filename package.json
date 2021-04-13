@@ -34,7 +34,6 @@
     "fastify-sse-v2": "^2.0.4",
     "fastify-static": "^4.0.1",
     "glob": "^7.1.6",
-    "googleapis": "^71.0.0",
     "grant": "^5.4.12",
     "handlebars": "^4.7.7",
     "nanoid": "^3.1.22",
