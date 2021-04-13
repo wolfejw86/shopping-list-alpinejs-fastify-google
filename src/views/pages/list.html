@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{> head }}
+</head>
+
+{{> layoutopen }}
+
+<div class="flex flex-col w-full" x-data="{ listItems: {{json}}, listId: '{{listId}}', addItemValue: '', ...methods()}"
+  x-init="init()">
+  <h2 class="text-3xl text-center">Shopping List</h2>
+
+  <div class="flex flex-col">
+    <form x-on:submit="$event.preventDefault(); addItem()">
+      <label for="list-item-add">Add To Shopping List</label>
+      <input class="p-4 text-lg text-gray-900" type="text" x-model="addItemValue" />
+    </form>
+  </div>
+
+  <ul id="list" class="flex flex-col">
+    <template x-for="item in listItems">
+      <li class="p-4 text-lg border flex justify-between">
+        <span x-text="item.content"></span>
+        <svg x-on:click="deleteItem(item)" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer" fill="none"
+          viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+      </li>
+    </template>
+  </ul>
+</div>
+
+<script>
+  function methods() {
+    return {
+      init() {
+        const $list = document.getElementById('list');
+
+        const sse = new EventSource('/list/sse');
+
+        sse.addEventListener('list_item_added', ({ data }) => {
+          const newItem = JSON.parse(data);
+          this.listItems.push(newItem);
+        });
+
+        sse.addEventListener('list_item_deleted', ({ data }) => {
+          const removedItem = JSON.parse(data);
+
+          const index = this.listItems.findIndex(item => item.id = removedItem.id);
+
+          this.listItems.splice(index, 1);
+        })
+      },
+      deleteItem(item) {
+        fetch('/list/item', {
+          method: 'DELETE',
+          body: JSON.stringify(item),
+          headers: { 'content-type': 'application/json' }
+        })
+      },
+      addItem() {
+        fetch('/list/item', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            content: this.addItemValue,
+            listId: this.listId,
+          })
+        }).then(r => r.text()).then(() => {
+          this.addItemValue = '';
+        });
+      }
+    }
+  }
+
+
+</script>
+
+
+{{> layoutclose }}
+
+</html>

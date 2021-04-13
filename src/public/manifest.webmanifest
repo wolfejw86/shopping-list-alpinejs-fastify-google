@@ -1,0 +1,21 @@
+{
+  "name": "RSS Feed Reader",
+  "short_name": "RSS Feed Reader",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdfdfd",
+  "theme_color": "#db4938",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://fastifyalpinejsexamplestaging-staticbucket-1gc6ql8g7kj3g.s3.us-west-2.amazonaws.com/robo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://fastifyalpinejsexamplestaging-staticbucket-1gc6ql8g7kj3g.s3.us-west-2.amazonaws.com/robo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

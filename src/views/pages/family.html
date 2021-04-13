@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{> head }}
+</head>
+
+{{> layoutopen }}
+
+<div class="flex flex-col h-full w-full items-center"
+  x-data="{ copied: false, generatedCode: '', tab: 'start', ...methods() }">
+  {{#with family}}
+  You're Family Is Connected!
+  {{!-- generate code --}}
+  <div x-show="tab === 'start'" class="flex flex-col justify-center">
+    <h2 class="text-2xl">Want others to join? Create a code and share it!</h2>
+    <button class="text-xl p-4 bg-green-500 border shadow-md rounded mt-2"
+      x-on:click="fetchCode().then(code => { generatedCode = code; });">Generate Code</button>
+
+    <div x-show="!!generatedCode"
+      class="flex justify-center items-center mb-20 border-white border-2 p-4 rounded mt-12">
+      <input id="" type="hidden" value="generatedCode" />
+      <span class="text-4xl" x-text="generatedCode"></span>
+
+      {{!-- dynamic clipboard icon --}}
+      <svg x-show="!copied"
+        x-on:click="copyToClipboard(generatedCode); copied = true; setTimeout(() => { copied = false;}, 2000);"
+        xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-5 cursor-pointer" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+      </svg>
+
+      <svg x-show="copied" xmlns="http://www.w3.org/2000/svg"
+        class="transition-colors h-6 w-6 ml-5 cursor-pointer text-green-400" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+      {{!-- end of clipboard icon --}}
+    </div>
+  </div>
+  {{!-- end of code generation --}}
+  {{else}}
+  <h2 class="text-2xl mt-5">Looks Like You Don't Have A Family Yet!</h2>
+
+  {{!-- tabs --}}
+  <div>
+    <button x-on:click="tab = 'join'" x-bind:class="{ 'underline': tab === 'join' }" class="text-xl text-white p-4">Join
+      A Family</button>
+    <button x-on:click="tab = 'start'" x-bind:class="{ 'underline': tab === 'start' }"
+      class="text-xl text-white p-4">Start A Family</button>
+  </div>
+  {{!-- end of tabs --}}
+
+  {{!-- enter code --}}
+  <div x-show="tab === 'join'" class="flex justify-center items-center">
+    <form x-data="{ familyCode: '', ...methods() }" class="flex flex-col w-full items-center mt-2"
+      x-on:submit="$event.preventDefault(); connectFamily(familyCode);">
+      <label for="familyCode">Enter Family Code To Connect:</label>
+      <input class="p-4 text-lg text-gray-900 rounded uppercase" type="text" name="familyCode" x-model="familyCode" />
+      <button type="submit" class="text-xl p-4 bg-green-500 border shadow-md rounded mt-2">Connect</button>
+    </form>
+  </div>
+  {{!-- end of enter code --}}
+
+  {{!-- generate code --}}
+  <div x-show="tab === 'start'" class="flex flex-col justify-center">
+    <h2 class="text-2xl">No Code Yet?</h2>
+    <h3>Click Below To Start A Family</h3>
+    <button class="text-xl p-4 bg-green-500 border shadow-md rounded mt-2"
+      x-on:click="fetchCode().then(code => { generatedCode = code; });">Generate Code</button>
+
+    <div x-show="!!generatedCode"
+      class="flex justify-center items-center mb-20 border-white border-2 p-4 rounded mt-12">
+      <input id="" type="hidden" value="generatedCode" />
+      <span class="text-4xl" x-text="generatedCode"></span>
+
+      {{!-- dynamic clipboard icon --}}
+      <svg x-show="!copied"
+        x-on:click="copyToClipboard(generatedCode); copied = true; setTimeout(() => { copied = false;}, 2000);"
+        xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-5 cursor-pointer" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+      </svg>
+
+      <svg x-show="copied" xmlns="http://www.w3.org/2000/svg"
+        class="transition-colors h-6 w-6 ml-5 cursor-pointer text-green-400" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+      {{!-- end of clipboard icon --}}
+    </div>
+  </div>
+  {{!-- end of code generation --}}
+  {{/with}}
+</div>
+
+<script>
+  function methods() {
+    return {
+      async fetchCode() {
+        const { code } = await fetch('/family/code').then(r => r.json());
+
+        return code;
+      },
+      copyToClipboard(value) {
+        window.navigator.clipboard.writeText(value);
+      },
+      async connectFamily(code) {
+        fetch('/family/code',
+          {
+            headers:
+              { 'content-type': 'application/json' },
+            method: 'POST',
+            body: JSON.stringify({ code })
+          }
+        ).then(r => r.json()).then((r) => {
+          window.location.reload();
+        })
+      }
+    }
+  }
+</script>
+
+
+{{> layoutclose }}
+
+</html>

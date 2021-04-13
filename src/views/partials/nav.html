@@ -1,0 +1,13 @@
+{{!-- nav --}}
+<div class="flex justify-between p-4 items-center">
+  <a class="text-2xl text-blue-500 underline cursor-pointer" href="/">Home</a>
+  <a class="text-2xl text-blue-500 underline cursor-pointer" href="/list">Shopping List</a>
+  <a class="text-2xl text-blue-500 underline cursor-pointer" href="/family">Family</a>
+  {{#with user }}
+  <div class="flex flex-col items-center">
+    <img class="rounded-full w-16 border-green-500 border-solid border-4" src="{{picture}}" alt="profile picture">
+  </div>
+  {{else }}
+  <a class="text-2xl text-blue-500 underline cursor-pointer" href="/connect/google">Login</a>
+  {{/with }}
+</div>

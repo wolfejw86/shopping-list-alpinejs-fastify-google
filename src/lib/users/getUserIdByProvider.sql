@@ -1,0 +1,1 @@
+SELECT id FROM users where provider_type = $1 AND provider_id = $2;

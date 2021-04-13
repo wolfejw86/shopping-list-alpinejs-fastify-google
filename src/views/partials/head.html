@@ -1,0 +1,17 @@
+<title>{{ title }}</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="environment" value="{{environment}}" />
+<script async src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+<link href="/styles.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="/robo192.png" />
+{{!-- pwa --}}
+<link rel="manifest" href="/manifest.webmanifest" />
+<!-- ios support -->
+<link rel="apple-touch-icon" href="/robo192.png" />
+<link rel="apple-touch-icon" href="/robo512.png" />
+<meta name="apple-mobile-web-app-status-bar" content="#db4938" />
+<meta name="theme-color" content="#db4938" />
+{{!-- pwa js --}}
+<script src="/sw.js"></script>
