@@ -1,5 +1,5 @@
 FROM node:12-alpine as local-dev
-EXPOSE 3001
+RUN apk add g++ make python
 RUN mkdir -p /app
 WORKDIR /app
 COPY *.json ./
@@ -10,6 +10,7 @@ CMD ["npm", "run", "start:watch"]
 
 
 FROM node:12-alpine as dev-builder
+RUN apk add g++ make python
 RUN mkdir -p /app
 WORKDIR /app
 COPY *.json ./
@@ -19,7 +20,8 @@ RUN npm run build
 CMD ["npm", "run", "start"]
 
 # Start multi-stage build
-FROM node:12-slim as production
+FROM node:12-alpine as production
+RUN apk add g++ make python
 EXPOSE 8080
 RUN mkdir -p /app
 WORKDIR /app
