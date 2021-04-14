@@ -3,7 +3,7 @@ import EventEmitter from 'events';
 import { FastifySSEPlugin } from 'fastify-sse-v2';
 import { EventIterator } from 'event-iterator';
 import { FamilyRepository } from '../../lib/family';
-import { forceLogin } from '../../lib/middleware/session';
+import { BadRequestError, forceLogin } from '../../lib/middleware/session';
 
 const root: FastifyPluginAsync = async (fastify): Promise<void> => {
     await fastify.register(FastifySSEPlugin);
@@ -33,7 +33,8 @@ const root: FastifyPluginAsync = async (fastify): Promise<void> => {
         select l.id as list_id, li.id, li.content from list l
         inner join list_item li
         on li.list_id = l.id
-        where family_id = $1`,
+        where family_id = $1
+        order by li.id`,
                 [family.id],
             )
             .then((list) => {
@@ -51,7 +52,7 @@ const root: FastifyPluginAsync = async (fastify): Promise<void> => {
     fastify.delete<{ Body: { id: string; listId: string; content: string } }>(
         '/item',
         { preHandler: forceLogin },
-        async (request, reply) => {
+        async (request) => {
             const userId = request.session.user.id;
             const family = await familyRepo.getFamily(userId);
 
@@ -139,6 +140,37 @@ const root: FastifyPluginAsync = async (fastify): Promise<void> => {
                 return () => dataPusher.removeListener('data', push);
             }),
         );
+    });
+
+    fastify.get('/sync', async (request) => {
+        const userId = request.session.user.id;
+        const family = await familyRepo.getFamily(userId);
+
+        if (!family) {
+            throw new BadRequestError('Nope');
+        }
+
+        const list = await fastify.db
+            .manyOrNone<{
+                id: string;
+                content: string;
+                list_id: string;
+            }>(
+                `
+        select l.id as list_id, li.id, li.content from list l
+        inner join list_item li
+        on li.list_id = l.id
+        where family_id = $1
+        order by li.id`,
+                [family.id],
+            )
+            .then((list) => {
+                return list.map((item) => ({ ...item, listId: item.list_id }));
+            });
+
+        return {
+            data: list,
+        };
     });
 };
 

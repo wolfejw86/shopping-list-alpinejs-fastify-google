@@ -6,13 +6,15 @@
 </head>
 
 {{> layoutopen }}
+{{> loader}}
+
 
 <div class="flex flex-col w-full" x-data="{ listItems: {{json}}, listId: '{{listId}}', addItemValue: '', ...methods()}"
-  x-init="init()">
+  x-init="init($dispatch)">
   <h2 class="text-3xl text-center">Shopping List</h2>
 
   <div class="flex flex-col">
-    <form x-on:submit="$event.preventDefault(); addItem()">
+    <form x-on:submit="$event.preventDefault(); addItem($dispatch);" class="flex flex-col">
       <label for="list-item-add">Add To Shopping List</label>
       <input class="p-4 text-lg text-gray-900" type="text" x-model="addItemValue" />
     </form>
@@ -35,8 +37,9 @@
 <script>
   function methods() {
     return {
-      init() {
+      init($dispatch) {
         const $list = document.getElementById('list');
+        this.toggleLoading = () => $dispatch('toggle-loading', {});
 
         const sse = new EventSource('/list/sse');
 
@@ -49,23 +52,41 @@
           const removedItem = JSON.parse(data);
 
           this.listItems = this.listItems.filter(item => item.id !== removedItem.id);
-        })
+        });
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState !== 'visible') {
+            return;
+          }
+
+          this.toggleLoading();
+
+          fetch('/list/sync').then(r => r.json()).then(({ data: list }) => {
+            this.toggleLoading();
+            this.listItems = list;
+          });
+        });
       },
       deleteItem(item) {
+        this.toggleLoading();
+
         fetch('/list/item', {
           method: 'DELETE',
           body: JSON.stringify(item),
           headers: { 'content-type': 'application/json' }
-        })
+        }).then(() => {
+          this.toggleLoading();
+        });
       },
       addItem() {
         fetch('/list/item', {
-          method: 'POST', headers: { 'content-type': 'application/json' },
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             content: this.addItemValue,
             listId: this.listId,
           })
-        }).then(r => r.text()).then(() => {
+        }).then(() => {
           this.addItemValue = '';
         });
       }
