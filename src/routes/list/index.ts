@@ -74,6 +74,44 @@ const root: FastifyPluginAsync = async (fastify): Promise<void> => {
         },
     );
 
+    fastify.patch<{ Params: { itemId: string } }>(
+        '/item/:itemId/mark-for-deletion',
+        {
+            preHandler: forceLogin,
+            schema: {
+                params: {
+                    type: 'object',
+                    required: ['itemId'],
+                    properties: {
+                        itemId: { type: 'string', format: 'uuid' },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const userId = request.session.user.id;
+            const family = await familyRepo.getFamily(userId);
+
+            if (!family) {
+                throw new Error('unauthorized');
+            }
+
+            const { itemId } = request.params;
+
+            await fastify.db.none(
+                'update list_item set marked_for_deletion = NOT marked_for_deletion WHERE id = $1',
+                [itemId],
+            );
+
+            dataPusher.emit('data', {
+                event: 'list_item_mark_deleted',
+                data: itemId,
+            });
+
+            reply.code(204);
+        },
+    );
+
     fastify.post<{ Body: { content: string; listId?: string } }>(
         '/item',
         {
